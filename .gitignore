@@ -40,7 +40,7 @@ ENV/
 # Project specific
 checkpoints/
 runs/
-logs/
+log/
 *.pth
 *.onnx
 *.pt
