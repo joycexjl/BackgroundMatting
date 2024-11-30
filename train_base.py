@@ -5,16 +5,12 @@ You can download pretrained DeepLabV3 weights from <https://github.com/VainF/Dee
 
 Example:
 
-    CUDA_VISIBLE_DEVICES=0 /home/stu1/.conda/envs/lxl/bin/python train_base.py \
-        --dataset-name ppm100 \
+    CUDA_VISIBLE_DEVICES=1 /home/stu1/.conda/envs/lxl/bin/python train_base.py \
+        --dataset-name p3m10k \
+        --background-dataset bg20k \
         --model-backbone mobilenetv3 \
-        --model-name mattingbase-mobilenetv3-ppm100 \
-        --epoch-end 100 \
-        --batch-size 32 \
-        --log-train-loss-interval 20 \
-        --log-train-images-interval 20 \
-        --log-valid-interval 20 \
-        --checkpoint-interval 20
+        --model-name mattingbase-mobilenetv3-p3m10k \
+        --epoch-end 50
 """
 
 import argparse
@@ -50,6 +46,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('--dataset-name', type=str,
                     required=True, choices=DATA_PATH.keys())
+parser.add_argument('--background-dataset', type=str,
+                    required=True, choices=('backgrounds', 'bg20k'))
 
 parser.add_argument('--model-backbone', type=str, required=True,
                     choices=['resnet101', 'resnet50', 'mobilenetv2', 'mobilenetv3'])
@@ -57,16 +55,15 @@ parser.add_argument('--model-name', type=str, required=True)
 parser.add_argument('--model-pretrain-initialization', type=str, default=None)
 parser.add_argument('--model-last-checkpoint', type=str, default=None)
 
-parser.add_argument('--batch-size', type=int, default=8)
+parser.add_argument('--batch-size', type=int, default=32)
 parser.add_argument('--num-workers', type=int, default=16)
 parser.add_argument('--epoch-start', type=int, default=0)
 parser.add_argument('--epoch-end', type=int, required=True)
 
-parser.add_argument('--log-train-loss-interval', type=int, default=10)
-parser.add_argument('--log-train-images-interval', type=int, default=2000)
-parser.add_argument('--log-valid-interval', type=int, default=5000)
-
-parser.add_argument('--checkpoint-interval', type=int, default=5000)
+parser.add_argument('--log-train-loss-interval', type=int, default=5)   # steps 
+parser.add_argument('--log-train-images-interval', type=int, default=200) # steps
+parser.add_argument('--log-valid-interval', type=int, default=5)        # epochs
+parser.add_argument('--checkpoint-interval', type=int, default=5)       # epochs
 
 args = parser.parse_args()
 
@@ -93,7 +90,7 @@ def train():
                 [1], T.ColorJitter(0.15, 0.15, 0.15, 0.05)),
             A.PairApply(T.ToTensor())
         ]), assert_equal_length=True),
-        ImagesDataset(DATA_PATH['backgrounds']['train'], mode='RGB', transforms=T.Compose([
+        ImagesDataset(DATA_PATH[args.background_dataset]['train'], mode='RGB', transforms=T.Compose([
             A.RandomAffineAndResize(
                 (512, 512), degrees=(-5, 5), translate=(0.1, 0.1), scale=(1, 2), shear=(-5, 5)),
             T.RandomHorizontalFlip(),
@@ -121,7 +118,7 @@ def train():
                 (512, 512), degrees=(-5, 5), translate=(0.1, 0.1), scale=(0.3, 1), shear=(-5, 5)),
             A.PairApply(T.ToTensor())
         ]), assert_equal_length=True),
-        ImagesDataset(DATA_PATH['backgrounds']['valid'], mode='RGB', transforms=T.Compose([
+        ImagesDataset(DATA_PATH[args.background_dataset]['valid'], mode='RGB', transforms=T.Compose([
             A.RandomAffineAndResize(
                 (512, 512), degrees=(-5, 5), translate=(0.1, 0.1), scale=(1, 1.2), shear=(-5, 5)),
             T.ToTensor()
@@ -154,9 +151,22 @@ def train():
         os.makedirs(f'checkpoints/{args.model_name}')
     writer = SummaryWriter(f'log/{args.model_name}')
 
+    current_epoch_loss = 0
+    current_epoch_steps = 0
+
     # Run loop
     for epoch in range(args.epoch_start, args.epoch_end):
-        for i, ((true_pha, true_fgr), true_bgr) in enumerate(tqdm(dataloader_train)):
+        pbar = tqdm(dataloader_train, 
+                    desc=f'Epoch [{epoch+1}/{args.epoch_end}]',
+                    ncols=120,
+                    ascii=True,
+                    bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]')
+        
+        # 重置当前epoch的统计
+        current_epoch_loss = 0
+        current_epoch_steps = 0
+        
+        for i, ((true_pha, true_fgr), true_bgr) in enumerate(pbar):
             step = epoch * len(dataloader_train) + i
 
             true_pha = true_pha.cuda(non_blocking=True)
@@ -217,8 +227,17 @@ def train():
             scaler.update()
             optimizer.zero_grad()
 
+            writer.add_scalar('train/batch_loss', loss.item(), step)
+
+            current_epoch_loss += loss.item()
+            current_epoch_steps += 1
+            
             if (step + 1) % args.log_train_loss_interval == 0:
-                writer.add_scalar('loss', loss, step)
+                avg_loss = current_epoch_loss / current_epoch_steps
+                pbar.set_postfix({
+                    'loss': f'{loss.item():.4f}',
+                    'avg_loss': f'{avg_loss:.4f}',
+                })
 
             if (step + 1) % args.log_train_images_interval == 0:
                 writer.add_image('train_pred_pha',
@@ -237,16 +256,12 @@ def train():
             del true_pha, true_fgr, true_bgr
             del pred_pha, pred_fgr, pred_err
 
-            if (step + 1) % args.log_valid_interval == 0:
-                valid(model, dataloader_valid, writer, epoch, args.epoch_end - args.epoch_start)
+        if (epoch + 1) % args.log_valid_interval == 0:
+            valid(model, dataloader_valid, writer, epoch)
 
-            if (step + 1) % args.checkpoint_interval == 0:
-                torch.save(model.state_dict(
-                ), f'checkpoints/{args.model_name}/epoch-{epoch}-iter-{step}.pth')
-
-
-        
-
+        if (epoch + 1) % args.checkpoint_interval == 0:
+            torch.save(model.state_dict(),
+                       f'checkpoints/{args.model_name}/epoch-{epoch}.pth')
 
 # --------------- Utils ---------------
 
@@ -271,12 +286,20 @@ def random_crop(*imgs):
     return results
 
 
-def valid(model, dataloader, writer, epoch, total_epoch):
+def valid(model, dataloader, writer, epoch):
     model.eval()
     loss_total = 0
     loss_count = 0
+
+    pbar = tqdm(dataloader,
+            desc=f'Validating epoch {epoch}',
+            ncols=120,
+            ascii=True,
+            bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]')
+    
+
     with torch.no_grad():
-        for (true_pha, true_fgr), true_bgr in dataloader:
+        for (true_pha, true_fgr), true_bgr in pbar:
             batch_size = true_pha.size(0)
 
             true_pha = true_pha.cuda(non_blocking=True)
@@ -289,7 +312,14 @@ def valid(model, dataloader, writer, epoch, total_epoch):
                                 pred_err, true_pha, true_fgr)
             loss_total += loss.cpu().item() * batch_size
             loss_count += batch_size
-    writer.add_scalar('valid_loss', loss_total / loss_count, epoch)
+
+            current_avg_loss = loss_total / loss_count
+            pbar.set_postfix({'avg_loss': f'{current_avg_loss:.4f}'})
+
+    final_avg_loss = loss_total / loss_count
+    writer.add_scalar('valid_loss', final_avg_loss, epoch)
+    print(f'Validation loss: {final_avg_loss:.4f}')
+    
     model.train()
 
 

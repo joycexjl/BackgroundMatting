@@ -1,8 +1,18 @@
 import torch
 from torch import nn
 from torchvision.models import mobilenet_v3_small
-
+import os
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+download_url = 'https://download.pytorch.org/models/mobilenet_v3_small-047dcff4.pth'
+checkpoint_path = './checkpoints/mobilenet_v3_small-047dcff4.pth'
+
+def download_checkpoint():
+    if os.path.exists(checkpoint_path):
+        print(f"Loading checkpoint from {checkpoint_path}")
+    else:
+        print(f"Downloading checkpoint from {download_url}")
+        torch.hub.download_url_to_file(download_url, checkpoint_path)
 
 
 class MobileNetV3Encoder(nn.Module):
@@ -14,7 +24,8 @@ class MobileNetV3Encoder(nn.Module):
     def __init__(self, in_channels=3):
         super().__init__()
         base = mobilenet_v3_small(weights=None)
-        state_dict = torch.load("./checkpoints/mobilenet_v3_small-047dcff4.pth",
+        download_checkpoint()
+        state_dict = torch.load(checkpoint_path,
                                 map_location=device,
                                 weights_only=True)
         base.load_state_dict(state_dict)
