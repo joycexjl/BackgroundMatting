@@ -35,12 +35,12 @@ DATA_PATH = {
     },
     'p3m10k': {
         'train': {
-            'fgr': BASE_PATH + 'P3M-10k/' + 'train/blurred_image',
-            'pha': BASE_PATH + 'P3M-10k/' + 'train/mask'
+            'fgr': BASE_PATH + 'P3M-10k-backup/P3M-10k/' + 'train/blurred_image',
+            'pha': BASE_PATH + 'P3M-10k-backup/P3M-10k/' + 'train/mask'
         },
         'valid': {
-            'fgr': BASE_PATH + 'P3M-10k/' + 'validation/P3M-500-P/blurred_image',
-            'pha': BASE_PATH + 'P3M-10k/' + 'validation/P3M-500-P/mask'
+            'fgr': BASE_PATH + 'P3M-10k-backup/P3M-10k/' + 'validation/P3M-500-P/blurred_image',
+            'pha': BASE_PATH + 'P3M-10k-backup/P3M-10k/' + 'validation/P3M-500-P/mask'
         }
     },
     'videomatte240k': {
@@ -88,7 +88,7 @@ DATA_PATH = {
         'valid': BASE_PATH + 'Backgrounds/test'
     },
     'bg20k': {
-        'train': BASE_PATH + 'bg-20k/train',
-        'valid': BASE_PATH + 'bg-20k/testval'
+        'train': BASE_PATH + 'bg-20k-backup/train',
+        'valid': BASE_PATH + 'bg-20k-backup/testval'
     }
 }

@@ -44,11 +44,9 @@ from kornia.filters import sobel
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--dataset-name', type=str,
-                    required=True, choices=DATA_PATH.keys())
-parser.add_argument('--background-dataset', type=str,
-                    required=True, choices=('backgrounds', 'bg20k'))
-
+parser.add_argument('--dataset-name', type=str, required=True, choices=DATA_PATH.keys())
+parser.add_argument('--background-dataset', type=str, required=True, choices=('backgrounds', 'bg20k'))
+    
 parser.add_argument('--model-backbone', type=str, required=True,
                     choices=['resnet101', 'resnet50', 'mobilenetv2', 'mobilenetv3'])
 parser.add_argument('--model-name', type=str, required=True)
@@ -60,10 +58,10 @@ parser.add_argument('--num-workers', type=int, default=16)
 parser.add_argument('--epoch-start', type=int, default=0)
 parser.add_argument('--epoch-end', type=int, required=True)
 
-parser.add_argument('--log-train-loss-interval', type=int, default=5)   # steps 
-parser.add_argument('--log-train-images-interval', type=int, default=200) # steps
-parser.add_argument('--log-valid-interval', type=int, default=5)        # epochs
-parser.add_argument('--checkpoint-interval', type=int, default=5)       # epochs
+parser.add_argument('--log-train-loss-interval', type=int, default=5)       # steps 
+parser.add_argument('--log-train-images-interval', type=int, default=200)   # steps
+parser.add_argument('--log-valid-interval', type=int, default=5)            # epochs
+parser.add_argument('--checkpoint-interval', type=int, default=5)           # epochs
 
 args = parser.parse_args()
 
@@ -162,7 +160,6 @@ def train():
                     ascii=True,
                     bar_format='{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}, {rate_fmt}]')
         
-        # 重置当前epoch的统计
         current_epoch_loss = 0
         current_epoch_steps = 0
         
@@ -240,18 +237,12 @@ def train():
                 })
 
             if (step + 1) % args.log_train_images_interval == 0:
-                writer.add_image('train_pred_pha',
-                                 make_grid(pred_pha, nrow=5), step)
-                writer.add_image('train_pred_fgr',
-                                 make_grid(pred_fgr, nrow=5), step)
-                writer.add_image('train_pred_com', make_grid(
-                    pred_fgr * pred_pha, nrow=5), step)
-                writer.add_image('train_pred_err',
-                                 make_grid(pred_err, nrow=5), step)
-                writer.add_image('train_true_src',
-                                 make_grid(true_src, nrow=5), step)
-                writer.add_image('train_true_bgr',
-                                 make_grid(true_bgr, nrow=5), step)
+                writer.add_image('train_pred_pha', make_grid(pred_pha, nrow=5), step)
+                writer.add_image('train_pred_fgr', make_grid(pred_fgr, nrow=5), step)
+                writer.add_image('train_pred_com', make_grid(pred_fgr * pred_pha, nrow=5), step)
+                writer.add_image('train_pred_err', make_grid(pred_err, nrow=5), step)
+                writer.add_image('train_true_src', make_grid(true_src, nrow=5), step)
+                writer.add_image('train_true_bgr', make_grid(true_bgr, nrow=5), step)
 
             del true_pha, true_fgr, true_bgr
             del pred_pha, pred_fgr, pred_err

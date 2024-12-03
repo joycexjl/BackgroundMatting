@@ -244,6 +244,8 @@ class Refiner(nn.Module):
         if self.patch_replace_method == 'scatter_nd':
             # Use scatter_nd. Best performance for PyTorch and TorchScript. Replacing patch by patch.
             x = x.view(xB, xC, xH // yH, yH, xW // yW, yW).permute(0, 2, 4, 1, 3, 5)
+            # match the dtype of x and y
+            y = y.to(dtype=x.dtype)
             x[idx[0], idx[1], idx[2]] = y
             x = x.permute(0, 3, 1, 4, 2, 5).view(xB, xC, xH, xW)
             return x
