@@ -45,12 +45,12 @@ DATA_PATH = {
     },
     'videomatte240k': {
         'train': {
-            'fgr': BASE_PATH + 'videomatte240k/' + 'train/fgr',
-            'pha': BASE_PATH + 'videomatte240k/' + 'train/pha'
+            'fgr': BASE_PATH + 'VideoMatte240K_JPEG_SD/' + 'train/fgr',
+            'pha': BASE_PATH + 'VideoMatte240K_JPEG_SD/' + 'train/pha'
         },
         'valid': {
-            'fgr': BASE_PATH + 'videomatte240k/' + 'test/fgr',
-            'pha': BASE_PATH + 'videomatte240k/' + 'test/pha'
+            'fgr': BASE_PATH + 'VideoMatte240K_JPEG_SD/' + 'test/fgr',
+            'pha': BASE_PATH + 'VideoMatte240K_JPEG_SD/' + 'test/pha'
         }
     },
     'photomatte13k': {

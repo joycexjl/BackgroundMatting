@@ -19,7 +19,7 @@ from model import MattingRefine
 
 parser = argparse.ArgumentParser(description='Export TorchScript')
 
-parser.add_argument('--model-backbone', type=str, required=True, choices=['resnet101', 'resnet50', 'mobilenetv2'])
+parser.add_argument('--model-backbone', type=str, required=True, choices=['resnet101', 'resnet50', 'mobilenetv2', 'mobilenetv3'])
 parser.add_argument('--model-checkpoint', type=str, required=True)
 parser.add_argument('--precision', type=str, default='float32', choices=['float32', 'float16'])
 parser.add_argument('--output', type=str, required=True)

@@ -8,7 +8,7 @@ This repository contains a reimplementation of the paper:
 
 The reimplementation introduces the following modifications:
 
-- **Datasets**: Uses the [P3M](https://paperswithcode.com/dataset/p3m-10k) dataset for portrait images and the [BG20K](https://paperswithcode.com/dataset/bg-20k) dataset for background images.
+- **Datasets**: Uses the [P3M](https://paperswithcode.com/dataset/p3m-10k) dataset for portrait images and the [BG20K](https://paperswithcode.com/dataset/bg-20k) dataset for background images for base training data. Uses the [VideoMatte240K](https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets), [PhotoMatte85](https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets) and [Backgrounds](https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets) for refine training data.
 - **Backbone Network**: Employs **MobileNetV3** instead of MobileNetV2 for improved performance.
 
 ---
@@ -22,6 +22,7 @@ The reimplementation introduces the following modifications:
 - [Dataset Preparation](#dataset-preparation)
 - [Usage](#usage)
   - [Local Testing](#local-testing)
+  - [Training](#Training)
   - [Running on Great Lakes Cluster](#running-on-great-lakes-cluster)
 - [Batch Script Example](#batch-script-example)
 - [Project Structure](#project-structure)
@@ -40,7 +41,9 @@ This project focuses on reimplementing the Background Matting V2 model with enha
 - **Datasets**: Incorporates the P3M dataset for high-quality portrait images and the BG20K dataset for diverse background images.
 - **Backbone Network**: Upgrades the backbone network to MobileNetV3 for better efficiency and accuracy.
 
-The implementation is adapted to run on the University of Michigan's Great Lakes High-Performance Computing Cluster.
+The implementation is adapted to run on the University of Michigan's Great Lakes High-Performance Computing Cluster. 
+
+You can test the trained model online on [huggingface](https://huggingface.co/spaces/Shangyunle/Background-Matting).
 
 ---
 
@@ -48,15 +51,48 @@ The implementation is adapted to run on the University of Michigan's Great Lakes
 
 - High-resolution background matting.
 - Real-time inference capabilities.
-- Uses **P3M** and **BG20K** datasets for improved training data.
 - Utilizes **MobileNetV3** as the backbone network.
+- Uses **P3M** and **BG20K** datasets for base training.
+- Uses the **VideoMatte240K**, **PhotoMatte85** and **Backgrounds** for refine training.
 - Adapted for use on HPC clusters, specifically the UMich Great Lakes cluster.
 - Supports multiple inference backends:
   - PyTorch (Research)
   - TorchScript (Production)
   - ONNX (Experimental)
+- Pretrained Models: The project has released pretrained models, you can access on [Google Drive](https://drive.google.com/drive/folders/1hC5u12Mqqc3u9LAHWV4OZhztLEOxKpxW?usp=sharing) for further research.
+- Huggingface Instance: You can test the trained model online on [huggingface](https://huggingface.co/spaces/Shangyunle/Background-Matting).
 
 ---
+
+## Results
+
+In this project, I tested the performance of the trained model in [Background Matting and Background Matting V2 Footage](https://grail.cs.washington.edu/projects/background-matting-v2/#/datasets) ,and compared it with the results of the original model. Here are some key results:
+
+<table style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+<tr>
+    <th style="width: 20%; text-align: center; padding: 10px;">Source Image</th>
+    <th style="width: 20%; text-align: center; padding: 10px;">Background Image</th>
+    <th style="width: 20%; text-align: center; padding: 10px;">New Background Image</th>
+    <th style="width: 20%; text-align: center; padding: 10px;">Origin Model</th>
+    <th style="width: 20%; text-align: center; padding: 10px;">Reimplementation</th>
+</tr>
+<tr>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304216918.png" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304200173.png" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304227915.png" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304202635.webp" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304204815.webp" width="200" style="display: block; margin: auto;"/></td>
+</tr>
+<tr>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304178911.png" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304188001.png" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304193100.png" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304207530.webp" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304210721.webp" width="200" style="display: block; margin: auto;"/></td>
+</tr>
+</table>
+
+All [test results](https://drive.google.com/drive/folders/1sZodmiO97JVyyjpT9H3UYuR-1Y4AlY9P?usp=sharing) and [train log](https://drive.google.com/drive/folders/1ORbrEgXIreVlJdIhpaDxcKbGvInevzvs?usp=sharing) are available on Google Drive.
 
 ## Requirements
 
@@ -136,7 +172,7 @@ The implementation is adapted to run on the University of Michigan's Great Lakes
    - **P3M Dataset**: [Download Link](https://paperswithcode.com/dataset/p3m-10k)
    - **BG20K Dataset**: [Download Link](https://paperswithcode.com/dataset/bg-20k)
 
-   Place the datasets in the `dataset/` directory on your local machine.
+   Place the datasets on your local machine and change `data_path.py` to the corresponding path.
 
 2. **Transfer the Datasets to the Cluster**
 
@@ -158,17 +194,6 @@ The implementation is adapted to run on the University of Michigan's Great Lakes
 
 You can test the model locally using the provided scripts.
 
-#### Training
-
-```bash
-python train_base.py \
-    --dataset-path ./dataset \
-    --model-backbone mobilenetv3 \
-    --epochs 50 \
-    --batch-size 16 \
-    --output-dir ./models
-```
-
 #### Inference
 
 ```bash
@@ -182,6 +207,35 @@ python inference_images.py \
     --bgr ./images/bgr_image.png \
     --output ./results/output.png
 ```
+
+
+
+### Training
+
+For basenet training:
+
+```bash
+python train_base.py \
+        --dataset-name p3m10k \
+        --background-dataset bg20k \
+        --model-backbone mobilenetv3 \
+        --model-name mattingbase-mobilenetv3-p3m10k \
+        --epoch-end 50
+```
+
+For refinenet training:
+
+```bash
+python train_refine.py \
+        --dataset-name videomatte240k \
+        --model-backbone mobilenetv3 \
+        --model-name mattingrefine-mobilenetv3-videomatte240k \
+        --model-last-checkpoint "checkpoints/checkpoint-xx.pth" \
+        --background-dataset backgrounds \
+        --batch-size 4
+```
+
+
 
 ### Running on Great Lakes Cluster
 
@@ -310,8 +364,6 @@ This project is licensed under the terms of the MIT license.
   - **P3M Dataset**: [https://paperswithcode.com/dataset/p3m-10k](https://paperswithcode.com/dataset/p3m-10k)
   - **BG20K Dataset**: [https://paperswithcode.com/dataset/bg-20k](https://paperswithcode.com/dataset/bg-20k)
 - **University of Michigan ARC**: For providing the Great Lakes cluster resources.
-- **Supportive Human**:
-  - Valuable discussion and immense help from [@IMLLX](https://github.com/IMLLX)
 
 ---
 

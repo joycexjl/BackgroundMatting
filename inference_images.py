@@ -4,15 +4,15 @@ Inference images: Extract matting on images.
 Example:
 
     python inference_images.py \
-        --model-type mattingrefine \
-        --model-backbone resnet50 \
+        --model-type mattingbase \
+        --model-backbone mobilenetv3 \
         --model-backbone-scale 0.25 \
         --model-refine-mode sampling \
         --model-refine-sample-pixels 80000 \
-        --model-checkpoint "PATH_TO_CHECKPOINT" \
-        --images-src "PATH_TO_IMAGES_SRC_DIR" \
-        --images-bgr "PATH_TO_IMAGES_BGR_DIR" \
-        --output-dir "PATH_TO_OUTPUT_DIR" \
+        --model-checkpoint "checkpoints/mattingrefine-mobilenetv3-videomatte240k/epoch-1.pth" \
+        --images-src "../datasets/matting-test/Images/img" \
+        --images-bgr "../datasets/matting-test/Images/bgr" \
+        --output-dir "./results" \
         --output-type com fgr pha
 
 """
@@ -42,7 +42,7 @@ from inference_utils import HomographicAlignment
 parser = argparse.ArgumentParser(description='Inference images')
 
 parser.add_argument('--model-type', type=str, required=True, choices=['mattingbase', 'mattingrefine'])
-parser.add_argument('--model-backbone', type=str, required=True, choices=['resnet101', 'resnet50', 'mobilenetv2'])
+parser.add_argument('--model-backbone', type=str, required=True, choices=['resnet101', 'resnet50', 'mobilenetv2', 'mobilenetv3'])
 parser.add_argument('--model-backbone-scale', type=float, default=0.25)
 parser.add_argument('--model-checkpoint', type=str, required=True)
 parser.add_argument('--model-refine-mode', type=str, default='sampling', choices=['full', 'sampling', 'thresholding'])
