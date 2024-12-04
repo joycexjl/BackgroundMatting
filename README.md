@@ -70,25 +70,16 @@ In this project, I tested the performance of the trained model in [Background Ma
 
 <table style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 <tr>
-    <th style="width: 20%; text-align: center; padding: 10px;">Source Image</th>
-    <th style="width: 20%; text-align: center; padding: 10px;">Background Image</th>
-    <th style="width: 20%; text-align: center; padding: 10px;">New Background Image</th>
-    <th style="width: 20%; text-align: center; padding: 10px;">Origin Model</th>
-    <th style="width: 20%; text-align: center; padding: 10px;">Reimplementation</th>
+    <th style="width: 50%; text-align: center; padding: 10px;">Origin Model</th>
+    <th style="width: 50%; text-align: center; padding: 10px;">Reimplementation</th>
 </tr>
 <tr>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304216918.png" width="200" style="display: block; margin: auto;"/></td>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304200173.png" width="200" style="display: block; margin: auto;"/></td>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304227915.png" width="200" style="display: block; margin: auto;"/></td>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304202635.webp" width="200" style="display: block; margin: auto;"/></td>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304204815.webp" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 50%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304202635.webp" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 50%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304204815.webp" width="200" style="display: block; margin: auto;"/></td>
 </tr>
 <tr>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304178911.png" width="200" style="display: block; margin: auto;"/></td>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304188001.png" width="200" style="display: block; margin: auto;"/></td>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304193100.png" width="200" style="display: block; margin: auto;"/></td>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304207530.webp" width="200" style="display: block; margin: auto;"/></td>
-    <td style="width: 20%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304210721.webp" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 50%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304207530.webp" width="200" style="display: block; margin: auto;"/></td>
+    <td style="width: 50%; text-align: center; padding: 10px;"><img src="https://image.pipzza.pw/1733304210721.webp" width="200" style="display: block; margin: auto;"/></td>
 </tr>
 </table>
 
