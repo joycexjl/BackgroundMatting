@@ -355,6 +355,7 @@ This project is licensed under the terms of the MIT license.
   - **P3M Dataset**: [https://paperswithcode.com/dataset/p3m-10k](https://paperswithcode.com/dataset/p3m-10k)
   - **BG20K Dataset**: [https://paperswithcode.com/dataset/bg-20k](https://paperswithcode.com/dataset/bg-20k)
 - **University of Michigan ARC**: For providing the Great Lakes cluster resources.
+- **External Support**: I want to thank my supportive human [@IMLLX](https://github.com/IMLLX) for valuable discussions and help throughout the project.
 
 ---
 
